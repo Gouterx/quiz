@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Perguntas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+        }
+        .container {
+            width: 60%;
+            margin: 50px auto;
+            background-color: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .question {
+            font-size: 20px;
+            margin-bottom: 20px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .options button:hover {
+            background-color: #218838;
+        }
+        .result {
+            display: none;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .score-table {
+            margin-top: 30px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        .score-table th, .score-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+        .score-table th {
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Jogo de Perguntas</h1>
+    <div class="question-container">
+        <div class="question"></div>
+        <div class="options"></div>
+    </div>
+
+    <div class="result">
+        <h2>Resultado Final</h2>
+        <p id="correct-count"></p>
+        <p id="incorrect-count"></p>
+        <table class="score-table" id="score-table">
+            <thead>
+                <tr>
+                    <th>Questão</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button onclick="startOver()">Reiniciar</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        {
+            question: "Qual é a função do objeto direto em uma oração?",
+            options: ["a) Complementar o verbo com uma preposição.", "b) Completar o verbo diretamente, sem a necessidade de preposição.", "c) Introduzir a ideia de ação.", "d) Indicar quem sofre a ação."],
+            correct: "b",
+            feedback: "Resposta correta! O objeto direto completa o verbo diretamente, sem preposição."
+        },
+        {
+            question: "Assinale a alternativa que apresenta um exemplo de objeto direto.",
+            options: ["a) Eu gosto de ler livros.", "b) Ele depende de você.", "c) Ela comeu a maçã.", "d) Ele escreveu sobre o tema."],
+            correct: "c",
+            feedback: "Resposta correta! 'A maçã' é o objeto direto."
+        },
+        {
+            question: "Qual é a função do objeto indireto?",
+            options: ["a) Completar o verbo diretamente, sem preposição.", "b) Reforçar a ação verbal.", "c) Completar o verbo com a necessidade de preposição.", "d) Descrever a ação do verbo."],
+            correct: "c",
+            feedback: "Resposta correta! O objeto indireto necessita de preposição para se ligar ao verbo."
+        },
+        // Adicione mais questões conforme necessário
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    const userAnswers = [];
+
+    function showQuestion() {
+        const currentQuestion = questions[currentQuestionIndex];
+        document.querySelector('.question').innerText = currentQuestion.question;
+
+        const optionsContainer = document.querySelector('.options');
+        optionsContainer.innerHTML = '';
+        currentQuestion.options.forEach(option => {
+            const button = document.createElement('button');
+            button.innerText = option;
+            button.onclick = () => checkAnswer(option);
+            optionsContainer.appendChild(button);
+        });
+    }
+
+    function checkAnswer(selectedOption) {
+        const currentQuestion = questions[currentQuestionIndex];
+        const isCorrect = selectedOption.charAt(0).toLowerCase() === currentQuestion.correct;
+        if (isCorrect) {
+            score++;
+            userAnswers.push({ question: currentQuestion.question, answer: "Correto" });
+        } else {
+            userAnswers.push({ question: currentQuestion.question, answer: "Errado" });
+        }
+
+        currentQuestionIndex++;
+        if (currentQuestionIndex < questions.length) {
+            showQuestion();
+        } else {
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.querySelector('.question-container').style.display = 'none';
+        document.querySelector('.result').style.display = 'block';
+
+        document.getElementById('correct-count').innerText = `Acertos: ${score}`;
+        document.getElementById('incorrect-count').innerText = `Erros: ${questions.length - score}`;
+
+        const scoreTableBody = document.querySelector('#score-table tbody');
+        userAnswers.forEach(answer => {
+            const row = document.createElement('tr');
+            row.innerHTML = `<td>${answer.question}</td><td>${answer.answer}</td>`;
+            scoreTableBody.appendChild(row);
+        });
+    }
+
+    function startOver() {
+        currentQuestionIndex = 0;
+        score = 0;
+        userAnswers.length = 0;
+
+        document.querySelector('.question-container').style.display = 'block';
+        document.querySelector('.result').style.display = 'none';
+
+        showQuestion();
+    }
+
+    // Inicializa o jogo
+    showQuestion();
+</script>
+
+</body>
+</html>
